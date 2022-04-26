@@ -490,11 +490,6 @@ export default class XHome {
       object.push('Status: ' + error.response.status.toString());
       object.push('Headers: ' + JSON.stringify(error.response.headers, null, 2));
       object.push('Data: ' + JSON.stringify(error.response.data, null, 2));
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      object.push(JSON.stringify('Request: ' + JSON.stringify(error.request)));
     }
     //object.push(error.config);
     return object.join('\n');
