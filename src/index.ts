@@ -469,7 +469,7 @@ export default class XHome {
           });
         }
         loop();
-      }).catch(err => {
+      }).catch(() => {
         setTimeout(() => loop(), 1000);
       });
     };
