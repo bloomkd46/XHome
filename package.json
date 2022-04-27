@@ -1,5 +1,5 @@
 {
-  "name": "xhome",
+  "name": "xfinityhome",
   "version": "1.0.0",
   "description": "Unofficial Xfinity Home node.js library (SDK) to control your home security",
   "license": "Apache-2.0",
