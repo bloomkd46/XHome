@@ -222,7 +222,7 @@ export default class XHome {
           validateStatus: (status) => {
             return status === 200;
           },
-          timeout: 3000,
+          timeout: 60000,
           timeoutErrorMessage: 'Request Timed Out',
         }).then(response => {
           const data: loginResponse = response.data;
@@ -266,7 +266,7 @@ export default class XHome {
         validateStatus: (status) => {
           return status === 200;
         },
-        timeout: 3000,
+        timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(() => resolve()).catch(err => reject(this.parseError(err)));
     });
@@ -290,7 +290,7 @@ export default class XHome {
         validateStatus: (status) => {
           return status === 200;
         },
-        timeout: 3000,
+        timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(data => {
         this.Profile = data.data; resolve(data.data);
@@ -320,7 +320,7 @@ export default class XHome {
         validateStatus: (status) => {
           return status === 200;
         },
-        timeout: 3000,
+        timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(data => resolve(data.headers['x-vcap-request-id'])).catch(err => reject(this.parseError(err)));
     });
@@ -349,7 +349,7 @@ export default class XHome {
         validateStatus: (status) => {
           return status === 200;
         },
-        timeout: 3000,
+        timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(response => resolve(response.data.devices)).catch(err => reject(this.parseError(err)));
     });
@@ -383,7 +383,7 @@ export default class XHome {
           validateStatus: (status) => {
             return status === 200;
           },
-          timeout: 3000,
+          timeout: 60000,
           timeoutErrorMessage: 'Request Timed Out',
         }).then(response => resolve(response.data.events)).catch(err => reject(this.parseError(err)));
 
@@ -410,7 +410,7 @@ export default class XHome {
               validateStatus: (status) => {
                 return status === 200;
               },
-              timeout: 3000,
+              timeout: 60000,
               timeoutErrorMessage: 'Request Timed Out',
             }).then(response => resolve(response.data.events)).catch(err => reject(this.parseError(err)));
           }));

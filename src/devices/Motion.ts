@@ -48,7 +48,7 @@ export default class Motion {
         validateStatus: (status) => {
           return status === 200;
         },
-        timeout: 3000,
+        timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(response => {
         this.device = response.data;
@@ -80,7 +80,7 @@ export default class Motion {
         validateStatus: (status) => {
           return status === 200;
         },
-        timeout: 3000,
+        timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(response => resolve(response.data)).catch(err => reject(this.xhome.parseError(err)));
     });
@@ -109,7 +109,7 @@ export default class Motion {
         validateStatus: (status) => {
           return status === 200;
         },
-        timeout: 3000,
+        timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(response => resolve(response.data)).catch(err => reject(this.xhome.parseError(err)));
     });
@@ -140,7 +140,7 @@ export default class Motion {
         validateStatus: (status) => {
           return status === 200;
         },
-        timeout: 3000,
+        timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(response => resolve(response.data)).catch(err => reject(this.xhome.parseError(err)));
     });
