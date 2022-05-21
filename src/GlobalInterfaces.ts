@@ -114,7 +114,7 @@ export interface Device {
     inTestMode?: boolean;
     armType?: 'away' | 'night' | 'stay' | '';
     bbConnected?: boolean;
-    status?: 'ready' | 'arming' | 'readyArmed' | 'notReady';
+    status?: 'ready' | 'arming' | 'readyArmed' | 'notReady' | 'entryDelay';
 
     isFaulted?: boolean;
     serialNumber?: string;
