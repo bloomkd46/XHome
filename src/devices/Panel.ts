@@ -188,7 +188,7 @@ export interface PanelDevice {
     inTestMode: boolean;
     armType: 'away' | 'night' | 'stay' | '';
     bbConnected: boolean;
-    status: 'ready' | 'arming' | 'readyArmed' | 'notReady';
+    status: 'ready' | 'arming' | 'readyArmed' | 'notReady' | 'entryDelay';
   };
   icontrolModel: string;
 }
