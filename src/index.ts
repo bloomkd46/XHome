@@ -18,7 +18,7 @@ export default class XHome {
   public devices: Device[] = [];
   public history: Event[] = [];
 
-  public UnsuportedDevices: Device[] = [];
+  public UnsupportedDevices: Device[] = [];
   public Panel: Panel[] = [];
   public Lights: Light[] = [];
   public DryContactSensors: DryContact[] = [];
@@ -47,7 +47,7 @@ export default class XHome {
    */
   protected constructor(refreshToken: string);
   /**
-   * NOTE: currently unsuported
+   * NOTE: currently unsupported
    * Uses your Xfinity Hom Credentials to fetch a Refresh Token
    * @param email your Xfinity Home email
    * @param password your Xfinity Home password
@@ -106,7 +106,7 @@ export default class XHome {
    */
   public static init(refreshToken: string): Promise<XHome>;
   /**
-  * @deprecated NOTE: currently unsuported.
+  * @deprecated NOTE: currently unsupported.
   * Uses your Xfinity Home Credentials to fetch a Refresh Token
   * @param email your Xfinity Home email
   * @param password your Xfinity Home password
@@ -169,7 +169,7 @@ export default class XHome {
                   continue;
                 }
               default:
-                this.UnsuportedDevices.push(device);
+                this.UnsupportedDevices.push(device);
                 break;
             }
           }
@@ -190,7 +190,7 @@ export default class XHome {
   }
 
   /**
-   * NOTE: currently unsuported
+   * NOTE: currently unsupported
    * @param email your Xfinity Home email
    * @param password your Xfinity Home password
    * @returns a Refresh Token
@@ -243,7 +243,7 @@ export default class XHome {
     } else if (email && password) {
       throw new Error('Not Yet Implemented');
     } else {
-      throw new Error('No Refresh Token Or Acount Credentials Provided.');
+      throw new Error('No Refresh Token Or Account Credentials Provided.');
     }
   }
 
@@ -327,8 +327,8 @@ export default class XHome {
   }*/
 
   /**
- * Fetches all the devices on your acount
- * @returns an Array of devices from your acount
+ * Fetches all the devices on your account
+ * @returns an Array of devices from your account
  */
   protected getDevices(): Promise<Device[]> {
     return new Promise((resolve, reject) => {
