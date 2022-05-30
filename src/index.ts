@@ -9,7 +9,7 @@ import Motion, { MotionDevice, MotionEvent } from './devices/Motion';
 import Panel, { PanelDevice, PanelEvent } from './devices/Panel';
 import { CommandResponse, DeltaEvent, Device, Event, loginResponse, Profile, XHomeError } from './GlobalInterfaces';
 import Debug from 'debug';
-Debug.enable('XHome:Error, XHome');
+//Debug.enable('XHome:Error, XHome');
 
 const log = Debug('XHome');
 const debug = Debug('XHome:Debug');
