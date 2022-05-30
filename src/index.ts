@@ -7,7 +7,23 @@ import Keypad, { KeypadDevice } from './devices/Keypad';
 import Light, { LightDevice } from './devices/Light';
 import Motion, { MotionDevice, MotionEvent } from './devices/Motion';
 import Panel, { PanelDevice, PanelEvent } from './devices/Panel';
-import { DeltaEvent, Device, Event, loginResponse, Profile } from './GlobalInterfaces';
+import { CommandResponse, DeltaEvent, Device, Event, loginResponse, Profile, XHomeError } from './GlobalInterfaces';
+import Debug from 'debug';
+Debug.enable('XHome:Error, XHome');
+
+const log = Debug('XHome');
+const debug = Debug('XHome:Debug');
+const debugResponse = Debug('XHome:Debug:Responses');
+
+const event = Debug('XHome:Events');
+const eventInfo = Debug('XHome:Events:Info');
+
+const activity = Debug('XHome:Activity');
+const activityInfo = Debug('XHome:Activity:Info');
+
+const error = Debug('XHome:Error');
+error.color = '1';
+const errorInfo = Debug('XHome:Error:Info');
 
 export {
   Camera, CameraDevice, DryContact, DryContactDevice, DryContactEvent, Keyfob, KeyfobDevice, Keypad, KeypadDevice,
@@ -54,7 +70,10 @@ export default class XHome {
    */
   protected constructor(email: string, password: string);
   protected constructor(refreshToken?: string, email?: string, password?: string) {
+    this.events.setMaxListeners(0);
     this.events.on('authenticated', (data: loginResponse) => {
+      log('Authenticated');
+      debugResponse(data);
       if (!this.refreshTokens.includes(data.refresh_token)) {
         this.refreshTokens.push(data.refresh_token);
       }
@@ -67,24 +86,28 @@ export default class XHome {
         }).catch(err => this.events.emit('error', err));
       }, (data.expires_in - 1) * 1000);
     });
-    this.events.on('event', (event: Event) => {
-      this.history.unshift(event);
+    this.events.on('event', (data: Event) => {
+      //event(data);
+      eventInfo(data);
+      this.history.unshift(data);
       if (this.eventCallback) {
-        this.eventCallback(event);
+        this.eventCallback(data);
       }
     });
-    this.events.on('activity', (event: DeltaEvent) => {
+    this.events.on('activity', (data: DeltaEvent) => {
+      //activity(data);
+      activityInfo(data);
       if (this.activityCallback) {
-        this.activityCallback(event);
+        this.activityCallback(data);
       }
     });
-    //this.events.on('initialized', () => this.watchForEvents(500, 5000, 5000));
+    //this.events.on('initialized', () => this.watchForActivity(500, 5000, 5000));
 
     //return (async (): Promise<XHome> => {
     if (refreshToken) {
       this.login(refreshToken).then(data => {
-        this.watchForEvents();
         this.events.emit('authenticated', data);
+        this.watchForActivity();
         this.setupDevices().then(() => this.events.emit('initialized')).catch(err => this.events.emit('error', err));
       }).catch(err => this.events.emit('error', err));
     } else if (email && password) {
@@ -113,6 +136,7 @@ export default class XHome {
   */
   public static init(email: string, password: string): Promise<XHome>;
   public static init(refreshToken?: string, email?: string, password?: string): Promise<XHome> {
+    log('Starting Setup');
     return new Promise((resolve, reject) => {
       let xhome: XHome;
       try {
@@ -124,8 +148,12 @@ export default class XHome {
           reject(new Error('No Refresh Token provided'));
           return;
         }
-        xhome.events.on('error', err => reject(err));
-        xhome.events.on('initialized', () => resolve(xhome));
+        xhome.events.on('error', err => {
+          error('Setup Failed'); reject(err);
+        });
+        xhome.events.on('initialized', () => {
+          log('Setup Completed'); resolve(xhome);
+        });
       } catch (err) {
         reject(err);
       }
@@ -133,6 +161,7 @@ export default class XHome {
   }
 
   protected setupDevices(): Promise<void> {
+    log('Setting Up Devices');
     return new Promise((resolve, reject) => {
       this.getDevices().then(devices => {
         this.getHistory().then(history => {
@@ -183,7 +212,7 @@ export default class XHome {
           this.MotionSensors = this.MotionSensors.sort((a, b) => {
             return a.device.properties.displayOrder - b.device.properties.displayOrder;
           });
-          resolve();
+          this.startCameraAccess().then(() => resolve()).catch(err => reject(this.parseError(err)));
         }).catch(err => reject(this.parseError(err)));
       }).catch(err => reject(this.parseError(err)));
     });
@@ -204,9 +233,11 @@ export default class XHome {
   protected login(refreshToken: string): Promise<loginResponse>;
 
   protected login(refreshToken?: string, email?: string, password?: string): Promise<loginResponse> {
+    log('Logging In');
     if (refreshToken) {
       return new Promise((resolve, reject) => {
         const body = `redirect_uri=xfinityhome://auth&refresh_token=${refreshToken}&grant_type=refresh_token`;
+        debug(body);
         axios({
           method: 'post',
           url: 'https://oauth.xfinity.com/oauth/token',
@@ -225,6 +256,7 @@ export default class XHome {
           timeout: 60000,
           timeoutErrorMessage: 'Request Timed Out',
         }).then(response => {
+          debugResponse(response.data);
           const data: loginResponse = response.data;
           this.accessToken = data.access_token;
           this.refreshToken = data.refresh_token;
@@ -248,9 +280,11 @@ export default class XHome {
   }
 
   public logout(): Promise<void> {
+    log('Logging Out');
     return new Promise((resolve, reject) => {
       //const body = `{ accessTokens: [${this.accessTokens.toString()}], refreshTokens: [${this.refreshTokens.toString()}] }`;
       const body = JSON.stringify({ accessTokens: this.accessTokens, refreshTokens: this.refreshTokens });
+      debug(body);
       axios({
         method: 'post',
         url: 'https://oauth.xfinity.com/oauth/discard',
@@ -268,11 +302,14 @@ export default class XHome {
         },
         timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
-      }).then(() => resolve()).catch(err => reject(this.parseError(err)));
+      }).then(response => {
+        debugResponse(response.data); resolve();
+      }).catch(err => reject(this.parseError(err)));
     });
   }
 
   protected getProfile(): Promise<Profile> {
+    log('Getting Profile');
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
@@ -293,44 +330,18 @@ export default class XHome {
         timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
       }).then(data => {
+        debugResponse(data.data);
         this.Profile = data.data; resolve(data.data);
       }).catch(err => reject(this.parseError(err)));
     });
   }
-
-  /*protected getSpsId(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const body = JSON.stringify({ platform: 'ios', deviceId: '', token: '' });
-      axios({
-        method: 'post',
-        url: 'https://xhomeapi-lb-prod.codebig2.net/client/v1/subscribe',
-        data: body,
-        headers: {
-          'Host': 'xhomeapi-lb-prod.codebig2.net',
-          'Content-Type': 'application/json',
-          'Connection': 'keep-alive',
-          'X-Client-Features': 'auth4all,carousel,carousel-devicedeeplink,no-cookie,deeplinkV1',
-          'Xh-Auth': this.xhAuth,
-          'Accept': 'application/json',
-          'Authorization': `${this.tokenType} ${this.accessToken}`,
-          'Accept-Language': 'en-us',
-          'Accept-Encoding': 'gzip, deflate, br',
-          'Content-Length': body.length,
-        },
-        validateStatus: (status) => {
-          return status === 200;
-        },
-        timeout: 60000,
-        timeoutErrorMessage: 'Request Timed Out',
-      }).then(data => resolve(data.headers['x-vcap-request-id'])).catch(err => reject(this.parseError(err)));
-    });
-  }*/
 
   /**
  * Fetches all the devices on your account
  * @returns an Array of devices from your account
  */
   protected getDevices(): Promise<Device[]> {
+    log('Getting Devices');
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
@@ -351,7 +362,62 @@ export default class XHome {
         },
         timeout: 60000,
         timeoutErrorMessage: 'Request Timed Out',
-      }).then(response => resolve(response.data.devices)).catch(err => reject(this.parseError(err)));
+      }).then(response => {
+        debugResponse(response.data); resolve(response.data.devices);
+      }).catch(err => reject(this.parseError(err)));
+    });
+  }
+
+  protected startCameraAccess(): Promise<CommandResponse> {
+    log('Requesting Camera Access');
+    return new Promise((resolve, reject) => {
+      const body = JSON.stringify({
+        videoTokenAppKey: 'comcastTokenKey',
+        cameras: this.Cameras.filter(x => !x.streamingInfo).map(camera => {
+          return {
+            instanceId: camera.device.id,
+            codec: camera.device.properties.videoCodec.split(',').pop() ?? '',
+            format: camera.device.properties.videoFormat.split(',').shift() ?? '',
+          };
+        }),
+        alwaysSendCameraAccessEventFlag: true,
+      });
+      debug(JSON.parse(body));
+      axios({
+        method: 'post',
+        url: 'https://xhomeapi-lb-prod.codebig2.net/client/icontrol/devices/cameras/startMultiAccess',
+        data: body,
+        headers: {
+          'Host': 'xhomeapi-lb-prod.codebig2.net',
+          'Content-Type': 'application/json',
+          'Connection': 'keep-alive',
+          'X-Client-Features': 'auth4all,carousel,carousel-devicedeeplink,no-cookie,deeplinkV1',
+          'Xh-Auth': this.xhAuth,
+          'Accept': 'application/json',
+          'Authorization': `${this.tokenType} ${this.accessToken}`,
+          'Accept-Language': 'en-us',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Content-Length': body.length,
+        },
+        validateStatus: (status) => {
+          return status === 200;
+        },
+        timeout: 60000,
+        timeoutErrorMessage: 'Request Timed Out',
+      }).then(response => {
+        log('Awaiting Camera Access');
+        debugResponse(response.data);
+        resolve(response.data);
+      }).catch(err => reject(this.parseError(err)));
+      const events: DeltaEvent[] = [];
+      this.events.on('activity', (data: DeltaEvent) => {
+        if (data.mediaType === 'event/cameraAccess') {
+          if (!events.includes(data)) {
+            events.push(data);
+          }
+          log('Access granted for %d/%d cameras', events.length, this.Cameras.length);
+        }
+      });
     });
   }
 
@@ -362,9 +428,13 @@ export default class XHome {
    */
   protected getHistory(day?: 0 | -1 | -2 | -3 | -4 | -5 | -6 | -7 | -8 | -9 | -10 | -11 | -12 | -13 | -14 | -15 |
     -16 | -17 | -18 | -19 | -20 | -21 | -22 | -23 | -24 | -25 | -26 | -27 | -28 | -29): Promise<Event[]> {
+    if (!this.history.length) {
+      log('Getting History');
+    } else {
+      event('Getting History');
+    }
     return new Promise((resolve, reject) => {
-
-      if (day) {
+      if (day !== undefined) {
         axios({
           method: 'get',
           url: 'https://xhomeapi-lb-prod.codebig2.net/client/icontrol/history/day?day=' + day,
@@ -427,11 +497,13 @@ export default class XHome {
 
   }
 
-  protected waitForEvent(): Promise<DeltaEvent[]> {
+  protected waitForActivity(): Promise<DeltaEvent[]> {
+    activity('Waiting For Activity');
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
-        url: 'https://xhomeapi-lb-prod.apps.cloud.comcast.net/client/icontrol/delta', //?spsId=' + this.spsId,
+        url: 'https://xhomeapi-lb-prod.apps.cloud.comcast.net/client/icontrol/delta', //?spsId=', //+
+        //`${'3' + '-' + Date.now() + '-' + (1e8 * Math.random()).toString(16).replace('.', '')}`, //?spsId=' + this.spsId,
         headers: {
           'Host': 'xhomeapi-lb-prod.apps.cloud.comcast.net',
           'Content-Type': 'application/json',
@@ -442,18 +514,42 @@ export default class XHome {
           'Authorization': `${this.tokenType} ${this.accessToken}`,
           'Accept-Language': 'en-us',
           'Accept-Encoding': 'gzip, deflate, br',
-
         },
         validateStatus: (status) => {
           return status === 200;
         },
+        timeout: 90000,
+        timeoutErrorMessage: 'Request Timed Out',
       }).then(response => resolve(response.data)).catch(err => reject(this.parseError(err)));
     });
   }
 
-  protected watchForEvents() {
-    const loop = () => {
-      this.waitForEvent().then((events) => {
+  protected watchForActivity() {
+    log('Activating Activity Watchdog');
+    this.events.on('waitForActivity', () => {
+      this.waitForActivity().then((events) => {
+        this.events.emit('waitForActivity');
+        if (events && events.length > 0) {
+          for (const event of events) {
+            this.events.emit('activity', event);
+          }
+          this.getHistory(0).then((history) => {
+            for (const event of history) {
+              if (!this.history.find(x => x.timestamp === event.timestamp)) {
+                this.events.emit('event', event);
+              }
+            }
+          }).catch(() => {
+            //do nothing
+          });
+        }
+      }).catch(() => {
+        activity('Error Encountered, Backing Off For 5 Seconds');
+        setTimeout(() => this.events.emit('waitForActivity'), 5000);
+      });
+    });
+    /*const loop = () => {
+      this.waitForActivity().then((events) => {
         if (events && events.length > 0) {
           for (const event of events) {
             this.events.emit('activity', event);
@@ -470,28 +566,38 @@ export default class XHome {
         }
         loop();
       }).catch(() => {
+        activity('Error Encountered, Backing Off For 1 Second');
         setTimeout(() => loop(), 1000);
       });
     };
-    loop();
+    loop();*/
+    this.events.emit('waitForActivity');
   }
 
-  public parseError(error: AxiosError): string {
-    const object: string[] = [];
-    if (error.message) {
-      // Something happened in setting up the request that triggered an Error
-      object.push('Message: ' + error.message);
-    } else {
-      object.push(error as unknown as string);
+  public parseError(axiosError: AxiosError): XHomeError {
+    const Error: XHomeError = {
+      name: axiosError.name,
+      message: axiosError.message,
+    };
+    if (axiosError.request) {
+      Error.request = {
+        method: axiosError.request.method,
+        protocol: axiosError.request.protocol,
+        host: axiosError.request.host,
+        path: axiosError.request.path,
+        headers: (axiosError.request._header?.split('\r\n') as string[] | undefined)?.filter(x => x) || [],
+      };
     }
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      object.push('Status: ' + error.response.status.toString());
-      object.push('Headers: ' + JSON.stringify(error.response.headers, null, 2));
-      object.push('Data: ' + JSON.stringify(error.response.data, null, 2));
+    if (axiosError.response) {
+      Error.response = {
+        statusCode: axiosError.response.status,
+        statusMessage: axiosError.response.statusText,
+        headers: axiosError.response.headers,
+        data: axiosError.response.data,
+      };
     }
-    //object.push(error.config);
-    return object.join('\n');
+    error(Error.message);
+    errorInfo(Error);
+    return Error;
   }
 }

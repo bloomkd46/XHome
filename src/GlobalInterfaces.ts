@@ -394,3 +394,21 @@ export interface CommandResponse {
   commandId: string;
   status: 'unknown';
 }
+
+export interface XHomeError {
+  name: string;
+  message: string;
+  request?: {
+    method: 'GET' | 'POST';
+    protocol: 'https:' | 'http:';
+    host: string;
+    path: string;
+    headers: string[];
+  };
+  response?: {
+    statusCode: number;
+    statusMessage: string;
+    headers: object;
+    data: object;
+  };
+}
