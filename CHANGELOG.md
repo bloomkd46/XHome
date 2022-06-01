@@ -1,3 +1,8 @@
+### 1.1.1 
+* Fixed Crash When No Camera's On Account
+* Added StreamingConfig Input Parameter
+
+
 ### 1.1.0 
 * Added GetImage function to camera's
 * Added GetVideo function to camera's (unverified)
