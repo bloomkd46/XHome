@@ -412,3 +412,7 @@ export interface XHomeError {
     data: object;
   };
 }
+export interface StreamingConfig {
+  codecs?: string[];
+  formats?: string[];
+}

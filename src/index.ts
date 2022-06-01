@@ -7,7 +7,7 @@ import Keypad, { KeypadDevice } from './devices/Keypad';
 import Light, { LightDevice } from './devices/Light';
 import Motion, { MotionDevice, MotionEvent } from './devices/Motion';
 import Panel, { PanelDevice, PanelEvent } from './devices/Panel';
-import { CommandResponse, DeltaEvent, Device, Event, loginResponse, Profile, XHomeError } from './GlobalInterfaces';
+import { CommandResponse, DeltaEvent, Device, Event, loginResponse, Profile, StreamingConfig, XHomeError } from './GlobalInterfaces';
 import Debug from 'debug';
 //Debug.enable('XHome:Error, XHome');
 
@@ -43,7 +43,7 @@ export default class XHome {
   public Keypads: Keypad[] = [];
   public Keyfobs: Keyfob[] = [];
 
-  public refreshToken = '';
+  //public refreshToken = '';
   protected refreshTokens: string[] = [];
   public accessToken = '';
   protected accessTokens: string[] = [];
@@ -61,15 +61,15 @@ export default class XHome {
    * Connects to Xfinity Home using a Refresh Token
    * @param refreshToken your Xfinity Home Refresh Token
    */
-  protected constructor(refreshToken: string);
+  protected constructor(refreshToken: string, streamingConfig?: StreamingConfig);
   /**
    * NOTE: currently unsupported
    * Uses your Xfinity Hom Credentials to fetch a Refresh Token
    * @param email your Xfinity Home email
    * @param password your Xfinity Home password
    */
-  protected constructor(email: string, password: string);
-  protected constructor(refreshToken?: string, email?: string, password?: string) {
+  //protected constructor(email: string, password: string);
+  protected constructor(public refreshToken?: string, private streamingConfig?: StreamingConfig/*, email?: string, password?: string*/) {
     this.events.setMaxListeners(0);
     this.events.on('authenticated', (data: loginResponse) => {
       log('Authenticated');
@@ -110,7 +110,7 @@ export default class XHome {
         this.watchForActivity();
         this.setupDevices().then(() => this.events.emit('initialized')).catch(err => this.events.emit('error', err));
       }).catch(err => this.events.emit('error', err));
-    } else if (email && password) {
+    } /*else if (email && password) {
       //throw new Error('Not Yet Implemented');
       this.login(email, password).then(data => {
         this.refreshToken = data.refresh_token;
@@ -120,30 +120,31 @@ export default class XHome {
         this.events.emit('authenticated', data);
         this.setupDevices().then(() => this.events.emit('initialized')).catch(err => this.events.emit('error', err));
       }).catch(err => this.events.emit('error', err));
-    }
+    }*/
   }
 
   /**
    * Connects to Xfinity Home using a Refresh Token
    * @param refreshToken your Xfinity Home Refresh Token
    */
-  public static init(refreshToken: string): Promise<XHome>;
+  public static init(refreshToken: string, streamingConfig?: StreamingConfig): Promise<XHome>;
   /**
   * @deprecated NOTE: currently unsupported.
   * Uses your Xfinity Home Credentials to fetch a Refresh Token
   * @param email your Xfinity Home email
   * @param password your Xfinity Home password
   */
-  public static init(email: string, password: string): Promise<XHome>;
-  public static init(refreshToken?: string, email?: string, password?: string): Promise<XHome> {
+  //public static init(email: string, password: string): Promise<XHome>;
+  public static init(refreshToken?: string, /*email?: string, password?: string,*/ streamingConfig?: StreamingConfig): Promise<XHome> {
     log('Starting Setup');
     return new Promise((resolve, reject) => {
       let xhome: XHome;
       try {
         if (refreshToken) {
-          xhome = new XHome(refreshToken);
-        } else if (email && password) {
+          xhome = new XHome(refreshToken, streamingConfig);
+          /* else if (email && password) {
           xhome = new XHome(email, password);
+        }*/
         } else {
           reject(new Error('No Refresh Token provided'));
           return;
@@ -212,9 +213,13 @@ export default class XHome {
           this.MotionSensors = this.MotionSensors.sort((a, b) => {
             return a.device.properties.displayOrder - b.device.properties.displayOrder;
           });
-          this.startCameraAccess().then(() => resolve()).catch(err => reject(this.parseError(err)));
-        }).catch(err => reject(this.parseError(err)));
-      }).catch(err => reject(this.parseError(err)));
+          if (this.Cameras.length) {
+            this.startCameraAccess().then(() => resolve()).catch(err => reject(err));
+          } else {
+            resolve();
+          }
+        }).catch(err => reject(err));
+      }).catch(err => reject(err));
     });
   }
 
@@ -373,11 +378,13 @@ export default class XHome {
     return new Promise((resolve, reject) => {
       const body = JSON.stringify({
         videoTokenAppKey: 'comcastTokenKey',
-        cameras: this.Cameras.filter(x => !x.streamingInfo).map(camera => {
+        cameras: this.Cameras.filter(camera => !camera.streamingInfo).map(camera => {
+          const codecs = camera.device.properties.videoCodec.split(',');
+          const formats = camera.device.properties.videoFormat.split(',');
           return {
             instanceId: camera.device.id,
-            codec: camera.device.properties.videoCodec.split(',').pop() ?? '',
-            format: camera.device.properties.videoFormat.split(',').shift() ?? '',
+            codec: this.streamingConfig?.codecs?.filter(codec => codecs.includes(codec)).shift() ?? codecs.pop()!,
+            format: this.streamingConfig?.formats?.filter(format => formats.includes(format)).shift() ?? formats.shift()!,
           };
         }),
         alwaysSendCameraAccessEventFlag: true,
