@@ -1,3 +1,10 @@
+### 1.1.0 
+* Added GetImage function to camera's
+* Added GetVideo function to camera's (unverified)
+* Bug Fixes
+* Added Debug Logging
+
+
 ### 1.0.2 
 * Added 'entryDelay' to the panel interface
 
