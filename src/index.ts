@@ -69,7 +69,7 @@ export default class XHome {
    * @param password your Xfinity Home password
    */
   //protected constructor(email: string, password: string);
-  protected constructor(public refreshToken?: string, private streamingConfig?: StreamingConfig/*, email?: string, password?: string*/) {
+  protected constructor(public refreshToken?: string, public readonly streamingConfig?: StreamingConfig) {
     this.events.setMaxListeners(0);
     this.events.on('authenticated', (data: loginResponse) => {
       log('Authenticated');
@@ -214,10 +214,12 @@ export default class XHome {
             return a.device.properties.displayOrder - b.device.properties.displayOrder;
           });
           if (this.Cameras.length) {
-            this.startCameraAccess().then(() => resolve()).catch(err => reject(err));
-          } else {
-            resolve();
+            this.startCameraAccess().catch(err => {
+              // eslint-disable-next-line no-console
+              console.error('Error Accessing Cameras:' + JSON.stringify(err));
+            });
           }
+          resolve();
         }).catch(err => reject(err));
       }).catch(err => reject(err));
     });
