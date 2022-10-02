@@ -1,3 +1,7 @@
+### 1.1.2 
+* Applied temporary fix to initialization failing if using next-gen cameras
+
+
 ### 1.1.1 
 * Fixed Crash When No Camera's On Account
 * Added StreamingConfig Input Parameter
