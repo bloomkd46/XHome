@@ -1,6 +1,9 @@
 import axios from 'axios';
-import XHome from '..';
+
+import XHome from '../';
 import { CommandResponse, DeltaEvent, Event } from '../GlobalInterfaces';
+
+
 
 export default class Panel {
   public history: PanelEvent[] = [];
@@ -188,7 +191,7 @@ export interface PanelDevice {
     inTestMode: boolean;
     armType: 'away' | 'night' | 'stay' | '';
     bbConnected: boolean;
-    status: 'ready' | 'arming' | 'readyArmed' | 'notReady' | 'entryDelay';
+    status: 'ready' | 'arming' | 'readyArmed' | 'notReady' | 'entryDelay' | /**Unverified*/'faultAlarm';
   };
   icontrolModel: string;
 }
