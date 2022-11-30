@@ -1,3 +1,7 @@
+### 1.2.0 
+* Added (Unverified) faultAlarm to panel
+
+
 ### 1.1.2 
 * Applied temporary fix to initialization failing if using next-gen cameras
 
