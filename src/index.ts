@@ -29,6 +29,20 @@ export default class XHome {
       config.headers['Xh-Auth'] = this.xhAuth!;
       return config;
     });
+    this.server.interceptors.response.use(undefined, async (err: AxiosError) => {
+      if (err.response?.status === 401) {
+        this.accessToken === undefined;
+        await this.login();
+        if (err.request !== undefined && !(err.request._header?.split('\r\n') as string[] | undefined)?.includes('Attempt: 2')) {
+          return this.server[(err.request.method as string).toLowerCase()]((err.request.path as string).replace('/api/services/', '/'), {
+            headers: {
+              'Attempt': 2,
+            },
+          });
+        }
+      }
+      return Promise.reject(err);
+    });
   }
 
   public async login() {
@@ -36,7 +50,7 @@ export default class XHome {
     server.interceptors.response.use((response) => {
       this.refreshToken = response.data.refresh_token;
       this.accessToken = `${response.data.token_type} ${response.data.access_token}`;
-      setTimeout(() => this.accessToken = undefined, (response.data.expires_in - 1) * 1000);
+      //setTimeout(() => this.accessToken = undefined, (response.data.expires_in - 1) * 1000);
       // Any status code that lie within the range of 2xx cause this function to trigger
       // Do something with response data
       return response;
