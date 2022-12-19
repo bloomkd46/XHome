@@ -152,7 +152,7 @@ export interface DryContactDevice {
   trouble: {
     description: string;
     name: 'senTamp' | string;
-    criticality: false;
+    criticality: boolean;
     timestamp: number;
   }[];
   name: string;

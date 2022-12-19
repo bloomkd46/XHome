@@ -73,7 +73,7 @@ export interface PanelDevice {
   trouble: {
     description: string;
     name: 'senTamp' | string;
-    criticality: false;
+    criticality: boolean;
     timestamp: number;
   }[];
   name: '';

@@ -61,7 +61,7 @@ export interface KeypadDevice {
   trouble: {
     description: string;
     name: 'senTamp' | string;
-    criticality: false;
+    criticality: boolean;
     timestamp: number;
   }[];
   name: 'Keypad' | string;
