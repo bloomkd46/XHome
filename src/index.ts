@@ -1,15 +1,14 @@
 import axios, { AxiosError } from 'axios';
 
-import { Camera } from './devices/Camera';
+import { Camera, CameraDevice } from './devices/Camera';
 import { DryContact, DryContactDevice } from './devices/DryContact';
 import { Keyfob, KeyfobDevice } from './devices/Keyfob';
 import { Keypad, KeypadDevice } from './devices/Keypad';
-import { Light } from './devices/Light';
+import { Light, LightDevice } from './devices/Light';
 import { Motion, MotionDevice } from './devices/Motion';
-import { Panel } from './devices/Panel';
+import { Panel, PanelDevice } from './devices/Panel';
 import { Unknown } from './devices/Unknown';
 import { DeltaEvent, Device, LoginResponse, Profile, RawDevice, XHomeError } from './GlobalInterfaces';
-
 
 
 export * from './devices/Camera';
@@ -158,13 +157,13 @@ export default class XHome {
         switch (rawDevice.deviceType) {
           case 'lightDimmer':
           case 'lightSwitch':
-            devices.push(new Light(this.server, rawDevice));
+            devices.push(new Light(this.server, rawDevice as LightDevice));
             break;
           case 'panel':
-            devices.push(new Panel(this.server, rawDevice));
+            devices.push(new Panel(this.server, rawDevice as PanelDevice));
             break;
           case 'camera':
-            devices.push(new Camera(this.server, rawDevice, this.watchdog ?? true));
+            devices.push(new Camera(this.server, rawDevice as CameraDevice, this.watchdog ?? true));
             break;
           case 'sensor':
             switch (rawDevice.properties.sensorType) {
