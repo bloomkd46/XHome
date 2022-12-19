@@ -3,7 +3,6 @@ import { AxiosInstance } from 'axios';
 import { CommandResponse } from '../GlobalInterfaces';
 
 
-
 export class Light {
   public onchange?: (oldState: LightDevice, newState: LightDevice) => void;
   public onevent?: (event: LightDeltaEvent) => void;
@@ -75,7 +74,12 @@ export interface LightDevice {
   deviceType: 'lightSwitch' | 'lightDimmer';
   id: string;
   deviceSubtype: 'default';
-  trouble: unknown[];
+  trouble: {
+    description: string;
+    name: 'senTamp' | string;
+    criticality: false;
+    timestamp: number;
+  }[];
   name: string;
   properties: {
     energyMgmtEnabled: boolean;

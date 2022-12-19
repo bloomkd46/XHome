@@ -3,7 +3,6 @@ import { AxiosInstance } from 'axios';
 import { CommandResponse } from '../GlobalInterfaces';
 
 
-
 export class Keyfob {
   public onchange?: (oldState: KeyfobDevice, newState: KeyfobDevice) => void;
 
@@ -59,7 +58,12 @@ export interface KeyfobDevice {
   deviceType: 'peripheral';
   id: string;
   deviceSubtype: 'default';
-  trouble: unknown[];
+  trouble: {
+    description: string;
+    name: 'senTamp' | string;
+    criticality: false;
+    timestamp: number;
+  }[];
   name: 'Keyfob 1' | string;
   properties: {
     type: 'keyfob';

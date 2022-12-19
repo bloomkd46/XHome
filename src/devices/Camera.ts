@@ -3,7 +3,6 @@ import axios, { AxiosInstance } from 'axios';
 import { CommandResponse } from '../GlobalInterfaces';
 
 
-
 export class Camera {
   public onchange?: (oldState: CameraDevice, newState: CameraDevice) => void;
   public onevent?: (event: CameraDeltaEvent) => void;
@@ -80,7 +79,12 @@ export interface CameraDevice {
   deviceType: 'camera';
   id: string;
   deviceSubtype: 'default';
-  trouble: unknown[];
+  trouble: {
+    description: string;
+    name: 'senTamp' | string;
+    criticality: false;
+    timestamp: number;
+  }[];
   name: string;
   properties: {
     videoFormat: 'MJPEG,FLV,RTSP' | string;

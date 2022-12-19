@@ -3,7 +3,6 @@ import { AxiosInstance } from 'axios';
 import { CommandResponse } from '../GlobalInterfaces';
 
 
-
 export class Motion {
   public onchange?: (oldState: MotionDevice, newState: MotionDevice) => void;
   public onevent?: (event: MotionDeltaEvent) => void;
@@ -95,7 +94,12 @@ export interface MotionDevice {
   deviceType: 'sensor';
   id: string;
   deviceSubtype: 'default';
-  trouble: unknown[];
+  trouble: {
+    description: string;
+    name: 'senTamp' | string;
+    criticality: false;
+    timestamp: number;
+  }[];
   name: string;
   properties: {
     isFaulted: boolean;

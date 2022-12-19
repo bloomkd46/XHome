@@ -3,7 +3,6 @@ import { AxiosInstance } from 'axios';
 import { CommandResponse } from '../GlobalInterfaces';
 
 
-
 export class Panel {
   public onchange?: (oldState: PanelDevice, newState: PanelDevice) => void;
   public onevent?: (event: PanelDeltaEvent) => void;
@@ -71,7 +70,12 @@ export interface PanelDevice {
   deviceType: 'panel';
   id: string;
   deviceSubtype: 'default';
-  trouble: unknown[];
+  trouble: {
+    description: string;
+    name: 'senTamp' | string;
+    criticality: false;
+    timestamp: number;
+  }[];
   name: '';
   properties: {
     macAddress: string;

@@ -3,7 +3,6 @@ import { AxiosInstance } from 'axios';
 import { CommandResponse } from '../GlobalInterfaces';
 
 
-
 export class DryContact {
   public onchange?: (oldState: DryContactDevice, newState: DryContactDevice) => void;
   public onevent?: (event: DryContactDeltaEvent) => void;
@@ -150,7 +149,12 @@ export interface DryContactDevice {
   deviceType: 'sensor';
   id: string;
   deviceSubtype: 'default';
-  trouble: unknown[];
+  trouble: {
+    description: string;
+    name: 'senTamp' | string;
+    criticality: false;
+    timestamp: number;
+  }[];
   name: string;
   properties: {
     isFaulted: boolean;
