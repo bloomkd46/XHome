@@ -1,3 +1,7 @@
+### 2.0.0 
+* Massive performance rewrite
+
+
 ### 1.2.0 
 * Added (Unverified) faultAlarm to panel
 
