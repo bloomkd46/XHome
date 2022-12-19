@@ -11,7 +11,7 @@ export class Keypad {
   }
 
   async get(): Promise<KeypadDevice> {
-    const device: KeypadDevice = (await this.server.get(this.device._links.self.href.replace('/client/icontrol', ''))).data;
+    const device: KeypadDevice = (await this.server.get(this.device._links.self.href)).data;
     if (this.onchange && (JSON.stringify(device) !== JSON.stringify(this.device))) {
       this.onchange(this.device, device);
     }
@@ -20,7 +20,7 @@ export class Keypad {
   }
 
   async label(value: string): Promise<CommandResponse> {
-    return (await this.server.post('/update/device', `path=${this.device._links.label.href}&value=${value}`)).data;
+    return (await this.server.post('/client/icontrol/update/device', `path=${this.device._links.label.href}&value=${value}`)).data;
   }
 }
 export interface KeypadDevice {

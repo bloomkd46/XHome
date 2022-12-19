@@ -14,7 +14,7 @@ export class Camera {
   }
 
   async get(): Promise<CameraDevice> {
-    const device: CameraDevice = (await this.server.get(this.device._links.self.href.replace('/client/icontrol', ''))).data;
+    const device: CameraDevice = (await this.server.get(this.device._links.self.href)).data;
     if (this.onchange && (JSON.stringify(device) !== JSON.stringify(this.device))) {
       this.onchange(this.device, device);
     }
@@ -23,14 +23,14 @@ export class Camera {
   }
 
   async label(value: string): Promise<CommandResponse> {
-    return (await this.server.post('/update/device', `path=${this.device._links.label.href}&value=${value}`)).data;
+    return (await this.server.post('/client/icontrol/update/device', `path=${this.device._links.label.href}&value=${value}`)).data;
   }
 
   async requestCameraAccess(): Promise<CommandResponse> {
     if (this.watchdog === false) {
       return Promise.reject(new Error('Watchdog Inactive'));
     }
-    return (await this.server.post('/devices/cameras/startMultiAccess', JSON.stringify({
+    return (await this.server.post('/client/icontrol/devices/cameras/startMultiAccess', JSON.stringify({
       videoTokenAppKey: 'comcastTokenKey',
       cameras: [{
         instanceId: this.device.id,

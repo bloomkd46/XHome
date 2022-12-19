@@ -12,7 +12,7 @@ export class Panel {
   }
 
   async get(): Promise<PanelDevice> {
-    const device: PanelDevice = (await this.server.get(this.device._links.self.href.replace('/client/icontrol', ''))).data;
+    const device: PanelDevice = (await this.server.get(this.device._links.self.href)).data;
     if (this.onchange && (JSON.stringify(device) !== JSON.stringify(this.device))) {
       this.onchange(this.device, device);
     }
@@ -21,11 +21,12 @@ export class Panel {
   }
 
   async disarm(code: string | number): Promise<CommandResponse> {
-    return (await this.server.post('/panel/disarm', `path=${this.device._links['panel/disarm'].href}&code=${code}`));
+    return (await this.server.post('/client/icontrol/panel/disarm', `path=${this.device._links['panel/disarm'].href}&code=${code}`));
   }
 
   async arm(code: string | number, mode: 'stay' | 'night' | 'away'): Promise<CommandResponse> {
-    return (await this.server.post('/panel/arm', `code=${code}&path=${this.device._links['panel/arm'].href}&armType=${mode}`));
+    return (await this.server.post('/client/icontrol/panel/arm',
+      `code=${code}&path=${this.device._links['panel/arm'].href}&armType=${mode}`));
   }
 }
 export interface PanelDeltaEvent {

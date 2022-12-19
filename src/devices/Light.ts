@@ -12,13 +12,13 @@ export class Light {
   }
 
   async set(value: boolean | number): Promise<CommandResponse> {
-    return (await this.server.post('/update/device', typeof value === 'boolean' ?
+    return (await this.server.post('/client/icontrol/update/device', typeof value === 'boolean' ?
       `path=${this.device._links.isOn.href}&value=${value}` :
       `path=${this.device._links.level?.href}&value=${value}`)).data;
   }
 
   async get(): Promise<LightDevice> {
-    const device: LightDevice = (await this.server.get(this.device._links.self.href.replace('/client/icontrol', ''))).data;
+    const device: LightDevice = (await this.server.get(this.device._links.self.href)).data;
     if (this.onchange && (JSON.stringify(device) !== JSON.stringify(this.device))) {
       this.onchange(this.device, device);
     }
@@ -27,7 +27,7 @@ export class Light {
   }
 
   async label(value: string): Promise<CommandResponse> {
-    return (await this.server.post('/update/device', `path=${this.device._links.label.href}&value=${value}`)).data;
+    return (await this.server.post('/client/icontrol/update/device', `path=${this.device._links.label.href}&value=${value}`)).data;
   }
 }
 export interface LightDeltaEvent {

@@ -1,7 +1,6 @@
 import { AxiosInstance } from 'axios';
 
 
-
 export class Unknown {
   public onchange?: (oldState: UnknownDevice, newState: UnknownDevice) => void;
 
@@ -10,7 +9,7 @@ export class Unknown {
   }
 
   async get(): Promise<UnknownDevice> {
-    const device: UnknownDevice = (await this.server.get(this.device._links.self.href.replace('/client/icontrol', ''))).data;
+    const device: UnknownDevice = (await this.server.get(this.device._links.self.href)).data;
     if (this.onchange && (JSON.stringify(device) !== JSON.stringify(this.device))) {
       this.onchange(this.device, device);
     }

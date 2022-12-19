@@ -12,7 +12,7 @@ export class Motion {
   }
 
   async get(): Promise<MotionDevice> {
-    const device: MotionDevice = (await this.server.get(this.device._links.self.href.replace('/client/icontrol', ''))).data;
+    const device: MotionDevice = (await this.server.get(this.device._links.self.href)).data;
     if (this.onchange && (JSON.stringify(device) !== JSON.stringify(this.device))) {
       this.onchange(this.device, device);
     }
@@ -21,15 +21,15 @@ export class Motion {
   }
 
   async label(value: string): Promise<CommandResponse> {
-    return (await this.server.post('/update/device', `path=${this.device._links.label.href}&value=${value}`)).data;
+    return (await this.server.post('/client/icontrol/update/device', `path=${this.device._links.label.href}&value=${value}`)).data;
   }
 
   async bypass(value: boolean): Promise<CommandResponse> {
-    return (await this.server.post('/update/device', `path=${this.device._links.isBypassed.href}&value=${value}`)).data;
+    return (await this.server.post('/client/icontrol/update/device', `path=${this.device._links.isBypassed.href}&value=${value}`)).data;
   }
 
   async mode(value: 'monitor24Hr' | string): Promise<CommandResponse> {
-    return (await this.server.post('/update/device', `path=${this.device._links.functionType.href}&value=${value}`)).data;
+    return (await this.server.post('/client/icontrol/update/device', `path=${this.device._links.functionType.href}&value=${value}`)).data;
   }
 
 }
