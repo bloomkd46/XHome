@@ -5,12 +5,12 @@ import { Keypad, KeypadDevice } from './devices/Keypad';
 import { Light, LightDeltaEvent, LightDevice } from './devices/Light';
 import { Motion, MotionDeltaEvent, MotionDevice } from './devices/Motion';
 import { Panel, PanelDeltaEvent, PanelDevice } from './devices/Panel';
-import { Unknown } from './devices/Unknown';
-
+import { Unknown, UnknownDevice } from './devices/Unknown';
 
 
 export type Device = Light | Panel | Motion | DryContact | Keypad | Keyfob | Camera | Unknown;
-export type RawDevice = LightDevice | PanelDevice | MotionDevice | DryContactDevice | KeypadDevice | KeyfobDevice | CameraDevice;
+export type RawDevice =
+  LightDevice | PanelDevice | MotionDevice | DryContactDevice | KeypadDevice | KeyfobDevice | CameraDevice | UnknownDevice;
 export type DeltaEvent = LightDeltaEvent | MotionDeltaEvent | PanelDeltaEvent | DryContactDeltaEvent | CameraDeltaEvent;
 
 export interface LoginResponse {
