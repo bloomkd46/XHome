@@ -1,3 +1,8 @@
+### 2.1.2 
+* Added UnknownDevice to RawDevice type
+* Change false to boolean in trouble type
+
+
 
 ### 2.1.1
 
