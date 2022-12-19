@@ -1,10 +1,31 @@
 import axios, { AxiosError } from 'axios';
 
+import { Camera } from './devices/Camera';
+import { DryContact, DryContactDevice } from './devices/DryContact';
+import { Keyfob, KeyfobDevice } from './devices/Keyfob';
+import { Keypad, KeypadDevice } from './devices/Keypad';
+import { Light } from './devices/Light';
+import { Motion, MotionDevice } from './devices/Motion';
+import { Panel } from './devices/Panel';
+import { Unknown } from './devices/Unknown';
+import { DeltaEvent, Device, LoginResponse, Profile, RawDevice, XHomeError } from './GlobalInterfaces';
 
+
+
+export * from './devices/Camera';
+export * from './devices/DryContact';
+export * from './devices/Keyfob';
+export * from './devices/Keypad';
+export * from './devices/Light';
+export * from './devices/Motion';
+export * from './devices/Panel';
+export * from './devices/Unknown';
+export * from './GlobalInterfaces';
 
 export default class XHome {
+  protected devices: Device[] = [];
   protected server = axios.create({
-    baseURL: 'https://xhomeapi-lb-prod.codebig2.net/client/icontrol',
+    baseURL: 'https://xhomeapi-lb-prod.codebig2.net/',
     headers: {
       'X-Client-Features': 'auth4all,carousel,carousel-devicedeeplink,no-cookie,deeplinkV1',
     },
@@ -14,13 +35,42 @@ export default class XHome {
   public xhAuth?: string;
 
 
-  constructor(public refreshToken: string) {
+  protected loggingIn = false;
+  protected gettingProfile = false;
+
+  constructor(public refreshToken: string, protected watchdog?: boolean) {
     this.server.interceptors.request.use(async (config) => {
       if (this.accessToken === undefined) {
-        await this.login();
+        if (this.loggingIn) {
+          await (new Promise(resolve => {
+            const interval = setInterval(() => {
+              if (!this.loggingIn) {
+                clearInterval(interval);
+                resolve(this.accessToken);
+              }
+            });
+          }));
+        } else {
+          this.loggingIn = true;
+          await this.login();
+          this.loggingIn = false;
+        }
       }
       if (this.xhAuth === undefined) {
-        await this.getProfile();
+        if (this.gettingProfile) {
+          await (new Promise(resolve => {
+            const interval = setInterval(() => {
+              if (!this.gettingProfile) {
+                clearInterval(interval);
+                resolve(this.xhAuth);
+              }
+            });
+          }));
+        } else {
+          this.gettingProfile = true;
+          await this.getProfile();
+          this.gettingProfile = false;
+        }
       }
       if (config.headers === undefined) {
         config.headers = {};
@@ -34,18 +84,29 @@ export default class XHome {
         this.accessToken === undefined;
         await this.login();
         if (err.request !== undefined && !(err.request._header?.split('\r\n') as string[] | undefined)?.includes('Attempt: 2')) {
-          return this.server[(err.request.method as string).toLowerCase()]((err.request.path as string).replace('/api/services/', '/'), {
-            headers: {
-              'Attempt': 2,
-            },
-          });
+          if (err.request.method === 'POST') {
+            return this.server.post(err.request.path, err.request.data, {
+              headers: {
+                'Attempt': 2,
+              },
+            });
+          } else if (err.request.method === 'GET') {
+            return this.server.get(err.request.path, {
+              headers: {
+                'Attempt': 2,
+              },
+            });
+          }
         }
       }
       return Promise.reject(err);
     });
+    if (this.watchdog !== false) {
+      this.watchForActivity();
+    }
   }
 
-  public async login() {
+  protected async login(): Promise<LoginResponse> {
     const server = axios.create();
     server.interceptors.response.use((response) => {
       this.refreshToken = response.data.refresh_token;
@@ -64,7 +125,7 @@ export default class XHome {
       })).data;
   }
 
-  public async getProfile() {
+  public async getProfile(): Promise<Profile> {
     const server = axios.create();
     server.interceptors.request.use(async (config) => {
       if (this.accessToken === undefined) {
@@ -89,41 +150,131 @@ export default class XHome {
     })).data;
   }
 
-  public async getDevices() {
-    return (await this.server.get('/devices')).data;
+  public async getDevices(): Promise<Device[]> {
+    const rawDevices: RawDevice[] = (await this.server.get('/client/icontrol/devices')).data.devices;
+    const devices: Device[] = [];
+    for (const rawDevice of rawDevices) {
+      if (this.devices.find(device => device.device.id === rawDevice.id) === undefined) {
+        switch (rawDevice.deviceType) {
+          case 'lightDimmer':
+          case 'lightSwitch':
+            devices.push(new Light(this.server, rawDevice));
+            break;
+          case 'panel':
+            devices.push(new Panel(this.server, rawDevice));
+            break;
+          case 'camera':
+            devices.push(new Camera(this.server, rawDevice, this.watchdog ?? true));
+            break;
+          case 'sensor':
+            switch (rawDevice.properties.sensorType) {
+              case 'dryContact':
+                devices.push(new DryContact(this.server, rawDevice as DryContactDevice));
+                break;
+              case 'motion':
+                devices.push(new Motion(this.server, rawDevice as MotionDevice));
+                break;
+              default:
+                devices.push(new Unknown(this.server, rawDevice));
+                break;
+            }
+            break;
+          case 'peripheral':
+            switch (rawDevice.properties.type) {
+              case 'keyfob':
+                devices.push(new Keyfob(this.server, rawDevice as KeyfobDevice));
+                break;
+              case 'keypad':
+                devices.push(new Keypad(this.server, rawDevice as KeypadDevice));
+                break;
+              default:
+                devices.push(new Unknown(this.server, rawDevice));
+                break;
+            }
+            break;
+          default:
+            devices.push(new Unknown(this.server, rawDevice));
+            break;
+        }
+      }
+    }
+    this.devices.push(...devices);
+    return this.devices;
+  }
+
+
+  public async getRawDevices(): Promise<RawDevice[]> {
+    return (await this.server.get('/client/icontrol/devices')).data.devices;
   }
 
   public readonly days = [0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15,
     -16, -17, -18, -19, -20, -21, -22, -23, -24, -25, -26, -27, -28, -29] as const;
 
-  public async getHistory(day?: this['days'][number]) {
-    return day !== undefined ?
-      (await this.server.get(`/history/day?day=${day}`)).data :
-      (await Promise.all(this.days.map(day1 => this.server.get(`/history/day?day=${day1}`))));
+  public async getHistory(day?: this['days'][number]): Promise<Record<string, any>[]> {
+    if (day !== undefined) {
+      return (await this.server.get(`/client/icontrol/history/day?day=${day}`)).data.events;
+
+    } else {
+      return (await Promise.all(this.days.map(day => this.getHistory(day)))).reduce((value1, value2) => value1.concat(value2));
+    }
   }
 
-  static parseError(axiosError: AxiosError) {
-    const Error: any = {
-      name: axiosError.name,
-      message: axiosError.message,
+  protected async waitForActivity(): Promise<DeltaEvent> {
+    const events = (await this.server.get('/client/icontrol/delta')).data;
+    for (const event of events) {
+      for (const device of this.devices) {
+        if (device.device.id === event.deviceId || (device instanceof Panel && event.deviceId === null)) {
+          if (event.mediaType === 'event/cameraAccess' && device instanceof Camera) {
+            device.streamingInfo = event.metadata;
+          }
+          if ('onevent' in device && device.onevent !== undefined) {
+            device.onevent(event);
+          }
+          if ('onchange' in device && device.onchange !== undefined) {
+            await device.get();
+          }
+        }
+      }
+    }
+    return events;
+  }
+
+  async getNextgenThumbnails(): Promise<unknown[]> {
+    return (await this.server.get('/client/nextgenThumbnails')).data;
+  }
+
+  async getNextgenStreams(): Promise<unknown[]> {
+    return (await this.server.get('/client/nextgenStreams'));
+  }
+
+  protected watchForActivity() {
+    const watchForActivity = async () => {
+      process.nextTick(() => this.waitForActivity().then(() => watchForActivity()).catch(() => setTimeout(() => watchForActivity(), 5000)));
     };
-    if (axiosError.request) {
-      Error.request = {
-        method: axiosError.request.method,
-        protocol: axiosError.request.protocol,
-        host: axiosError.request.host,
-        path: axiosError.request.path,
-        headers: (axiosError.request._header?.split('\r\n') as string[] | undefined)?.filter(x => x) || [],
-      };
-    }
-    if (axiosError.response) {
-      Error.response = {
-        statusCode: axiosError.response.status,
-        statusMessage: axiosError.response.statusText,
-        headers: axiosError.response.headers,
-        data: axiosError.response.data,
-      };
-    }
-    return Error;
+    watchForActivity();
   }
 }
+export const parseError = (axiosError: AxiosError) => {
+  const Error: XHomeError = {
+    name: axiosError.name,
+    message: axiosError.message,
+  };
+  if (axiosError.request) {
+    Error.request = {
+      method: axiosError.request.method,
+      protocol: axiosError.request.protocol,
+      host: axiosError.request.host,
+      path: axiosError.request.path,
+      headers: (axiosError.request._header?.split('\r\n') as string[] | undefined)?.filter(x => x) || [],
+    };
+  }
+  if (axiosError.response) {
+    Error.response = {
+      statusCode: axiosError.response.status,
+      statusMessage: axiosError.response.statusText,
+      headers: axiosError.response.headers,
+      data: axiosError.response.data,
+    };
+  }
+  return Error;
+};
