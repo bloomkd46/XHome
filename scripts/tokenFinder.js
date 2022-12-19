@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+// INSTALL DEPENDENCIES SEPARATELY
 const Proxy = require('http-mitm-proxy');
 const EventEmitter = require('events');
 const program = require('commander');
@@ -209,5 +209,5 @@ proxy.listen({ port: program.port, sslCaDir: ROOT }, err => {
     console.log('\nFollow the instructions on <insert github link here>');
     console.log(`Proxy IP: ${address}`);
     console.log(`Proxy Port: ${port}\n\n`);
-  })
+  });
 });
