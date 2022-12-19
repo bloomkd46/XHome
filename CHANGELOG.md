@@ -1,3 +1,7 @@
+### 2.1.1 
+* Added trouble type
+
+
 ### 2.1.0 
 * Security Improvements
 
