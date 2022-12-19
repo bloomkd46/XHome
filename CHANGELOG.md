@@ -1,3 +1,7 @@
+### 2.1.0 
+* Security Improvements
+
+
 ### 2.0.0 
 * Massive performance rewrite
 
