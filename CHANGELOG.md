@@ -1,3 +1,7 @@
+### 2.2.0 
+* Added Router
+
+
 ### 2.1.3 
 * Fixed api url typo
 
