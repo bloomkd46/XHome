@@ -81,8 +81,9 @@ export default class XHome {
     });
     this.server.interceptors.response.use(undefined, async (err: AxiosError) => {
       if (err.response?.status === 401) {
-        this.accessToken === undefined;
-        await this.login();
+        this.accessToken = undefined;
+        //await this.login();
+        this.xhAuth = undefined;
         if (err.request !== undefined && !(err.request._header?.split('\r\n') as string[] | undefined)?.includes('Attempt: 2')) {
           if (err.request.method === 'POST') {
             return this.server.post(err.request.path, err.request.data, {
