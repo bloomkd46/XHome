@@ -82,7 +82,12 @@
     ],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/member-delimiter-style": [
-      "warn"
+      "warn",
+      {
+        "singleline": {
+          "requireLast": true
+        }
+      }
     ]
   }
 }

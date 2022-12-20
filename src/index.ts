@@ -38,7 +38,7 @@ export default class XHome {
   protected loggingIn = false;
   protected gettingProfile = false;
 
-  constructor(public refreshToken: string, protected watchdog?: boolean) {
+  constructor(public refreshToken: string, protected watchdog?: { enabled?: boolean; autoFetch?: boolean; }) {
     this.server.interceptors.request.use(async (config) => {
       if (this.accessToken === undefined) {
         if (this.loggingIn) {
@@ -102,7 +102,7 @@ export default class XHome {
       }
       return Promise.reject(err);
     });
-    if (this.watchdog !== false) {
+    if (this.watchdog?.enabled !== false) {
       this.watchForActivity();
     }
   }
@@ -165,7 +165,7 @@ export default class XHome {
             devices.push(new Panel(this.server, rawDevice as PanelDevice));
             break;
           case 'camera':
-            devices.push(new Camera(this.server, rawDevice as CameraDevice, this.watchdog ?? true));
+            devices.push(new Camera(this.server, rawDevice as CameraDevice, this.watchdog?.enabled ?? true));
             break;
           case 'sensor':
             switch (rawDevice.properties.sensorType) {
@@ -234,7 +234,7 @@ export default class XHome {
           if ('onevent' in device && device.onevent !== undefined) {
             device.onevent(event);
           }
-          if ('onchange' in device && device.onchange !== undefined) {
+          if ('onchange' in device && device.onchange !== undefined && this.watchdog?.autoFetch !== false) {
             await device.get();
           }
         }
