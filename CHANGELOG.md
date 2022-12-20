@@ -1,3 +1,7 @@
+### 2.2.1 
+* Fixed plugin crashing when XH-Auth token expired
+
+
 ### 2.2.0 
 * Added Router
 
