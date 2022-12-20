@@ -1,3 +1,8 @@
+### 2.3.0 
+* Added watchdog options
+* Better event types
+
+
 ### 2.2.1 
 * Fixed plugin crashing when XH-Auth token expired
 
