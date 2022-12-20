@@ -33,14 +33,30 @@ export class DryContact {
   }
 
 }
-export type DryContactDeltaEvent = DryContactZoneEvent | DryContactUpdateEvent;
-export interface DryContactZoneEvent {
+export type DryContactDeltaEvent = DryContactFaultEvent | DryContactTroubleEvent | DryContactUpdateEvent;
+export interface DryContactFaultEvent {
   commandId: string;
   deviceId: string;
   mediaType: 'event/zone';
   timestamp: number;
   name: 'isFaulted';
   value: 'false' | 'true';
+  channel: 'B';
+  metadata: {
+    eventTime: string;
+    sensorTemperature: string;
+    sensorNearFarSignal: string;
+    sensorBatteryVoltage: string;
+    sensorNearFarRF: string;
+  };
+}
+export interface DryContactTroubleEvent {
+  commandId: string;
+  deviceId: string;
+  mediaType: 'event/zone';
+  timestamp: number;
+  name: 'trouble';
+  value: 'senTamp' | 'senTampRes';
   channel: 'B';
   metadata: {
     eventTime: string;

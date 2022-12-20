@@ -40,8 +40,8 @@ export interface PanelDeltaEvent {
   metadata: {
     eventTime: string;
     trouble: 'false' | 'true';
-    armType: null | string;
-    status: 'notReady' | string;
+    armType: null | '' | 'stay' | 'night' | 'away';
+    status: (typeof status)[number];
   };
 }
 export const status = ['ready', 'arming', 'readyArmed', 'notReady', 'entryDelay'] as const;

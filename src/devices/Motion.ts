@@ -33,8 +33,8 @@ export class Motion {
   }
 
 }
-export type MotionDeltaEvent = MotionZoneEvent;
-export interface MotionZoneEvent {
+export type MotionDeltaEvent = MotionFaultEvent | MotionTroubleEvent | MotionUpdateEvent;
+export interface MotionFaultEvent {
   commandId: string;
   deviceId: string;
   mediaType: 'event/zone';
@@ -48,6 +48,39 @@ export interface MotionZoneEvent {
     sensorNearFarSignal: string;
     sensorBatteryVoltage: string;
     sensorNearFarRF: string;
+  };
+}
+export interface MotionTroubleEvent {
+  commandId: string;
+  deviceId: string;
+  mediaType: 'event/zone';
+  timestamp: number;
+  name: 'trouble';
+  value: 'senTamp' | 'senTampRes';
+  channel: 'B';
+  metadata: {
+    eventTime: string;
+    sensorTemperature: string;
+    sensorNearFarSignal: string;
+    sensorBatteryVoltage: string;
+    sensorNearFarRF: string;
+  };
+}
+export interface MotionUpdateEvent {
+  commandId: string;
+  deviceId: string;
+  mediaType: 'event/zoneUpdated';
+  timestamp: number;
+  name: null;
+  value: null;
+  channel: null;
+  metadata: {
+    displayOrder: string;
+    eventTime: string;
+    isBypassed: 'true' | 'false';
+    label: string;
+    functionType: 'perimeter' | 'entryExit';
+    type: 'door' | 'window';
   };
 }
 
