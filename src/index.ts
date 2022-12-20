@@ -7,6 +7,7 @@ import { Keypad, KeypadDevice } from './devices/Keypad';
 import { Light, LightDevice } from './devices/Light';
 import { Motion, MotionDevice } from './devices/Motion';
 import { Panel, PanelDevice } from './devices/Panel';
+import { Router, RouterDevice } from './devices/Router';
 import { Unknown } from './devices/Unknown';
 import { DeltaEvent, Device, LoginResponse, Profile, RawDevice, XHomeError } from './GlobalInterfaces';
 
@@ -185,6 +186,9 @@ export default class XHome {
                 break;
               case 'keypad':
                 devices.push(new Keypad(this.server, rawDevice as KeypadDevice));
+                break;
+              case 'router':
+                devices.push(new Router(this.server, rawDevice as RouterDevice));
                 break;
               default:
                 devices.push(new Unknown(this.server, rawDevice));
