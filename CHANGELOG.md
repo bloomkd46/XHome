@@ -1,3 +1,7 @@
+### 2.1.3 
+* Fixed api url typo
+
+
 ### 2.1.2 
 * Added UnknownDevice to RawDevice type
 * Change false to boolean in trouble type
