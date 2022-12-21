@@ -1,6 +1,6 @@
 {
   "name": "xfinityhome",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Unofficial Xfinity Home node.js library (SDK) to control your home security",
   "license": "Apache-2.0",
   "repository": {
