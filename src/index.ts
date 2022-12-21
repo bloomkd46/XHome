@@ -38,7 +38,7 @@ export default class XHome {
   protected loggingIn = false;
   protected gettingProfile = false;
 
-  constructor(public refreshToken: string, protected watchdog?: { enabled?: boolean; autoFetch?: boolean; }) {
+  constructor(public refreshToken: string, protected watchdog?: { enabled?: boolean; autoFetch?: boolean; errorHandler?: (err) => void; }) {
     this.server.interceptors.request.use(async (config) => {
       if (this.accessToken === undefined) {
         if (this.loggingIn) {
@@ -253,7 +253,12 @@ export default class XHome {
 
   protected watchForActivity() {
     const watchForActivity = async () => {
-      process.nextTick(() => this.waitForActivity().then(() => watchForActivity()).catch(() => setTimeout(() => watchForActivity(), 5000)));
+      process.nextTick(() => this.waitForActivity().then(() => watchForActivity()).catch(err => {
+        if (this.watchdog?.errorHandler) {
+          this.watchdog.errorHandler(err);
+        }
+        setTimeout(() => watchForActivity(), 5000);
+      }));
     };
     watchForActivity();
   }
