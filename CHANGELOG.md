@@ -1,3 +1,7 @@
+### 2.3.1 
+* Added optional error handler for watchdog
+
+
 ### 2.3.0 
 * Added watchdog options
 * Better event types
