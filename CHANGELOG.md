@@ -1,3 +1,7 @@
+### 2.4.0 
+* Added armed and alarm Status Codes To Panel
+
+
 ### 2.3.1 
 * Added optional error handler for watchdog
 
