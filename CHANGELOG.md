@@ -1,3 +1,7 @@
+### 2.7.0 
+* Added low battery trouble support
+
+
 ### 2.6.0 
 * Added support for water detectors
 
