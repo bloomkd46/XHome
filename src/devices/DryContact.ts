@@ -45,5 +45,6 @@ export interface DryContactDevice extends SensorDevice {
     type: 'door' | 'window';
     sensorType: 'dryContact';
     functionType: 'entryExit' | 'perimeter';
+    isBypassed: boolean;
   } & SensorProperties;
 }

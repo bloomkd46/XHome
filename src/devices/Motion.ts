@@ -45,5 +45,6 @@ export interface MotionDevice extends SensorDevice {
     type: 'motion';
     sensorType: 'motion';
     functionType: 'monitor24Hr' | string;
+    isBypassed: boolean;
   } & SensorProperties;
 }

@@ -53,6 +53,7 @@ export interface SensorProperties {
   temperature: number;
   functionType: string;
   nearFarSignal: string;
+  isBypassed?: boolean;
 }
 export interface SensorDevice {
   firmwareVersion: string;
