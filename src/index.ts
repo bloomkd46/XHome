@@ -190,6 +190,7 @@ export default class XHome {
                 devices.push(new Keyfob(this.server, rawDevice as KeyfobDevice));
                 break;
               case 'keypad':
+              case 'takeoverKeypad':
                 devices.push(new Keypad(this.server, rawDevice as KeypadDevice));
                 break;
               case 'router':

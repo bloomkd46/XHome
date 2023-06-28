@@ -66,8 +66,8 @@ export interface KeypadDevice {
   }[];
   name: 'Keypad' | string;
   properties: {
-    type: 'keypad';
-    label: 'Keypad' | string;
+    type: 'keypad' | 'takeoverKeypad';
+    label: 'Keypad' | 'Takeover' | string;
   };
   icontrolModel: string;
 }
