@@ -1,3 +1,7 @@
+### 2.5.1 
+* Added missing export statement
+
+
 ### 2.5.0 
 Added support for the following devices:
  * Smoke Detectors
