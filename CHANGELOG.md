@@ -1,3 +1,7 @@
+### 2.7.2 
+* Added gateways to router class
+
+
 ### 2.7.1 
 * Fixed isBypassed bug
 
