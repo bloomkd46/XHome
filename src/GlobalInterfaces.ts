@@ -1,22 +1,145 @@
-import { Camera, CameraDeltaEvent, CameraDevice } from './devices/Camera';
-import { DryContact, DryContactDeltaEvent, DryContactDevice } from './devices/DryContact';
+import { Camera, CameraDevice } from './devices/Camera';
+import { DryContact, DryContactDevice } from './devices/DryContact';
 import { Keyfob, KeyfobDevice } from './devices/Keyfob';
 import { Keypad, KeypadDevice } from './devices/Keypad';
-import { LegacyDryContact, LegacyDryContactDeltaEvent, LegacyDryContactDevice } from './devices/LegacyDryContact';
-import { Light, LightDeltaEvent, LightDevice } from './devices/Light';
-import { Motion, MotionDeltaEvent, MotionDevice } from './devices/Motion';
-import { Panel, PanelDeltaEvent, PanelDevice } from './devices/Panel';
+import { LegacyDryContact, LegacyDryContactDevice } from './devices/LegacyDryContact';
+import { Light, LightDevice } from './devices/Light';
+import { Motion, MotionDevice } from './devices/Motion';
+import { Panel, PanelDevice } from './devices/Panel';
 import { Router, RouterDevice } from './devices/Router';
-import { Smoke, SmokeDeltaEvent, SmokeDevice } from './devices/Smoke';
+import { Smoke, SmokeDevice } from './devices/Smoke';
 import { Unknown, UnknownDevice } from './devices/Unknown';
-import { Water, WaterDeltaEvent, WaterDevice } from './devices/Water';
+import { Water, WaterDevice } from './devices/Water';
 
 
 export type Device = Light | Panel | Smoke | Water | Motion | DryContact | LegacyDryContact | Keypad | Keyfob | Router | Camera | Unknown;
 export type RawDevice = LightDevice | PanelDevice | SmokeDevice | WaterDevice | MotionDevice | DryContactDevice | LegacyDryContactDevice |
   KeypadDevice | KeyfobDevice | RouterDevice | CameraDevice | UnknownDevice;
-export type DeltaEvent = LightDeltaEvent | SmokeDeltaEvent | WaterDeltaEvent | MotionDeltaEvent | PanelDeltaEvent | DryContactDeltaEvent |
-  LegacyDryContactDeltaEvent | CameraDeltaEvent;
+/*export type DeltaEvent = LightDeltaEvent | SmokeDeltaEvent | WaterDeltaEvent | MotionDeltaEvent | PanelDeltaEvent | DryContactDeltaEvent |
+  LegacyDryContactDeltaEvent | CameraDeltaEvent;*/
+
+export interface Trouble {
+  description: string;
+  name: 'senTamp' | 'senPreLowBat' | /*???-->*/'senLowBat'/*<--???*/ | string;
+  criticality: boolean;
+  timestamp: number;
+}
+export interface SensorLinks {
+  self: {
+    href: string;
+  };
+  label: {
+    method: 'POST';
+    href: string;
+  };
+  functionType: {
+    method: 'POST';
+    href: string;
+  };
+  isBypassed?: {
+    method: 'POST';
+    href: string;
+  };
+}
+export interface SensorProperties {
+  isFaulted: boolean;
+  serialNumber: string;
+  batteryVoltage: number;
+  displayOrder: number;
+  nearFarRF: string;
+  label: string;
+  type: string;
+  sensorType: string;
+  temperature: number;
+  functionType: string;
+  nearFarSignal: string;
+}
+export interface SensorDevice {
+  firmwareVersion: string;
+  hardwareId: string;
+  hardwareVersion: string;
+  manufacturer: string;
+  serialNumber: string;
+  status: 'online' | string;
+  technology: 'zigbee' | 'wifi';
+  deviceHelp?: {
+    deviceType: string;
+    manufacturer: string;
+    model: string;
+    iconUrl: string;
+    batteryRequired: string;
+    batteryType: string;
+    batteryCount: string;
+    batterySelfInstall: 'Self' | string;
+    batteryReplacementWebUrl: string;
+    batteryReplacementMobileUrl: string;
+    batteryPurchaseLink: string;
+  };
+  _links: SensorLinks;
+  model: string;
+  deletable: boolean;
+  deviceType: 'sensor';
+  id: string;
+  deviceSubtype: string;
+  trouble: Trouble[];
+  name: string;
+  properties: SensorProperties;
+  icontrolModel: string;
+}
+export type SensorDeltaEvent = FaultDeltaEvent | TroubleDeltaEvent | UpdateDeltaEvent;
+
+/**Sensor Faulted */
+export interface FaultDeltaEvent {
+  commandId: string;
+  deviceId: string;
+  mediaType: 'event/zone';
+  timestamp: number;
+  name: 'isFaulted';
+  value: 'false' | 'true';
+  channel: 'B';
+  metadata: {
+    eventTime: string;
+    sensorTemperature: string;
+    sensorNearFarSignal: string;
+    sensorBatteryVoltage: string;
+    sensorNearFarRF: string;
+  };
+}
+/** Sensor encounters trouble */
+export interface TroubleDeltaEvent {
+  commandId: string;
+  deviceId: string;
+  mediaType: 'event/zone';
+  timestamp: number;
+  name: 'trouble';
+  value: 'senTamp' | 'senTampRes' | 'senPreLowBat' | 'senLowBat';
+  channel: 'B';
+  metadata: {
+    eventTime: string;
+    sensorTemperature: string;
+    sensorNearFarSignal: string;
+    sensorBatteryVoltage: string;
+    sensorNearFarRF: string;
+  };
+}
+/** Sensor status changed (bypassed/function type changed) */
+export interface UpdateDeltaEvent {
+  commandId: string;
+  deviceId: string;
+  mediaType: 'event/zoneUpdated';
+  timestamp: number;
+  name: null;
+  value: null;
+  channel: null;
+  metadata: {
+    displayOrder: string;
+    eventTime: string;
+    isBypassed: 'true' | 'false';
+    label: string;
+    functionType: 'perimeter' | 'entryExit';
+    type: 'door' | 'window';
+  };
+}
 
 export interface LoginResponse {
   access_token: string;

@@ -44,7 +44,8 @@ export interface PanelDeltaEvent {
     status: (typeof status)[number];
   };
 }
-export const status = ['ready', 'arming', 'readyArmed', 'notReady', 'entryDelay', 'armed', 'alarm'] as const;
+export const status = ['ready', 'arming', 'readyArmed', 'notReady', 'entryDelay', 'armed', 'alarm',
+/*???-->*/'faultAlarm'/*<--???*/] as const;
 export interface PanelDevice {
   firmwareVersion: string;
   hardwareId: string;

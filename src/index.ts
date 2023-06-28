@@ -12,7 +12,7 @@ import { Router, RouterDevice } from './devices/Router';
 import { Smoke, SmokeDevice } from './devices/Smoke';
 import { Unknown } from './devices/Unknown';
 import { Water, WaterDevice } from './devices/Water';
-import { DeltaEvent, Device, LoginResponse, Profile, RawDevice, XHomeError } from './GlobalInterfaces';
+import { Device, LoginResponse, Profile, RawDevice, SensorDeltaEvent, XHomeError } from './GlobalInterfaces';
 
 
 export * from './devices/Camera';
@@ -240,7 +240,7 @@ export default class XHome {
     }
   }
 
-  protected async waitForActivity(): Promise<DeltaEvent> {
+  protected async waitForActivity(): Promise<SensorDeltaEvent> {
     const events = (await this.server.get('/client/icontrol/delta')).data;
     for (const event of events) {
       for (const device of this.devices) {

@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 
-import { CommandResponse } from '../GlobalInterfaces';
+import { CommandResponse, Trouble } from '../GlobalInterfaces';
 
 
 export class Light {
@@ -74,12 +74,7 @@ export interface LightDevice {
   deviceType: 'lightSwitch' | 'lightDimmer';
   id: string;
   deviceSubtype: 'default';
-  trouble: {
-    description: string;
-    name: 'senTamp' | string;
-    criticality: boolean;
-    timestamp: number;
-  }[];
+  trouble: Trouble[];
   name: string;
   properties: {
     energyMgmtEnabled: boolean;
