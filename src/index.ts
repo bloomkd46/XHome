@@ -16,9 +16,11 @@ import { DeltaEvent, Device, LoginResponse, Profile, RawDevice, XHomeError } fro
 
 export * from './devices/Camera';
 export * from './devices/DryContact';
+export * from './devices/LegacyDryContact';
 export * from './devices/Keyfob';
 export * from './devices/Keypad';
 export * from './devices/Light';
+export * from './devices/Smoke';
 export * from './devices/Motion';
 export * from './devices/Panel';
 export * from './devices/Unknown';
