@@ -11,6 +11,7 @@ import { Panel, PanelDevice } from './devices/Panel';
 import { Router, RouterDevice } from './devices/Router';
 import { Smoke, SmokeDevice } from './devices/Smoke';
 import { Unknown } from './devices/Unknown';
+import { Water, WaterDevice } from './devices/Water';
 import { DeltaEvent, Device, LoginResponse, Profile, RawDevice, XHomeError } from './GlobalInterfaces';
 
 
@@ -21,6 +22,7 @@ export * from './devices/Keyfob';
 export * from './devices/Keypad';
 export * from './devices/Light';
 export * from './devices/Smoke';
+export * from './devices/Water';
 export * from './devices/Motion';
 export * from './devices/Panel';
 export * from './devices/Unknown';
@@ -181,6 +183,9 @@ export default class XHome {
                 break;
               case 'smoke':
                 devices.push(new Smoke(this.server, rawDevice as SmokeDevice));
+                break;
+              case 'water':
+                devices.push(new Water(this.server, rawDevice as WaterDevice));
                 break;
               default:
                 if (['door', 'windows'].includes(rawDevice.properties.type)) {

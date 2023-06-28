@@ -9,12 +9,13 @@ import { Panel, PanelDeltaEvent, PanelDevice } from './devices/Panel';
 import { Router, RouterDevice } from './devices/Router';
 import { Smoke, SmokeDeltaEvent, SmokeDevice } from './devices/Smoke';
 import { Unknown, UnknownDevice } from './devices/Unknown';
+import { Water, WaterDeltaEvent, WaterDevice } from './devices/Water';
 
 
-export type Device = Light | Panel | Smoke | Motion | DryContact | LegacyDryContact | Keypad | Keyfob | Router | Camera | Unknown;
-export type RawDevice = LightDevice | PanelDevice | SmokeDevice | MotionDevice | DryContactDevice | LegacyDryContactDevice | KeypadDevice |
-  KeyfobDevice | RouterDevice | CameraDevice | UnknownDevice;
-export type DeltaEvent = LightDeltaEvent | SmokeDeltaEvent | MotionDeltaEvent | PanelDeltaEvent | DryContactDeltaEvent |
+export type Device = Light | Panel | Smoke | Water | Motion | DryContact | LegacyDryContact | Keypad | Keyfob | Router | Camera | Unknown;
+export type RawDevice = LightDevice | PanelDevice | SmokeDevice | WaterDevice | MotionDevice | DryContactDevice | LegacyDryContactDevice |
+  KeypadDevice | KeyfobDevice | RouterDevice | CameraDevice | UnknownDevice;
+export type DeltaEvent = LightDeltaEvent | SmokeDeltaEvent | WaterDeltaEvent | MotionDeltaEvent | PanelDeltaEvent | DryContactDeltaEvent |
   LegacyDryContactDeltaEvent | CameraDeltaEvent;
 
 export interface LoginResponse {
