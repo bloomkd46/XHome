@@ -206,6 +206,7 @@ export default class XHome {
                 devices.push(new Keypad(this.server, rawDevice as KeypadDevice));
                 break;
               case 'router':
+              case 'gateway':
                 devices.push(new Router(this.server, rawDevice as RouterDevice));
                 break;
               default:

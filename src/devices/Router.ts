@@ -20,19 +20,19 @@ export class Router {
 export interface RouterDevice {
   firmwareVersion: string;
   hardwareId: string;
-  manufacturer: 'Netgear';
+  manufacturer: 'Netgear' | 'XFINITY';
   macAddress: string;
   status: 'online';
   technology: 'wifi';
   _links: {
     self: { href: string; };
   };
-  model: 'WNR1000' | string;
+  model: 'WNR1000' | 'Gateway' | string;
   deletable: boolean;
   deviceType: 'peripheral';
   name: 'Network Peripheral';
-  properties: { type: 'router'; label: 'Network Peripheral'; };
-  icontrolModel: 'WNR1000' | string;
+  properties: { type: 'router' | 'Gateway'; label: 'Network Peripheral'; };
+  icontrolModel: 'WNR1000' | 'Gateway' | string;
   id: string;
   deviceSubtype: 'default';
   trouble: {
