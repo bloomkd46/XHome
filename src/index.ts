@@ -9,6 +9,7 @@ import { Light, LightDevice } from './devices/Light';
 import { Motion, MotionDevice } from './devices/Motion';
 import { Panel, PanelDevice } from './devices/Panel';
 import { Router, RouterDevice } from './devices/Router';
+import { Smoke, SmokeDevice } from './devices/Smoke';
 import { Unknown } from './devices/Unknown';
 import { DeltaEvent, Device, LoginResponse, Profile, RawDevice, XHomeError } from './GlobalInterfaces';
 
@@ -176,9 +177,13 @@ export default class XHome {
               case 'motion':
                 devices.push(new Motion(this.server, rawDevice as MotionDevice));
                 break;
+              case 'smoke':
+                devices.push(new Smoke(this.server, rawDevice as SmokeDevice));
+                break;
               default:
                 if (['door', 'windows'].includes(rawDevice.properties.type)) {
                   devices.push(new LegacyDryContact(this.server, rawDevice as LegacyDryContactDevice));
+                  break;
                 }
                 devices.push(new Unknown(this.server, rawDevice));
                 break;
