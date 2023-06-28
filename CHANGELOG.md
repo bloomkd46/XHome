@@ -1,3 +1,7 @@
+### 2.6.0 
+* Added support for water detectors
+
+
 ### 2.5.1 
 * Added missing export statement
 
