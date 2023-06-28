@@ -1,3 +1,7 @@
+### 2.7.1 
+* Fixed isBypassed bug
+
+
 ### 2.7.0 
 * Added low battery trouble support
 
