@@ -4,6 +4,7 @@ import { Camera, CameraDevice } from './devices/Camera';
 import { DryContact, DryContactDevice } from './devices/DryContact';
 import { Keyfob, KeyfobDevice } from './devices/Keyfob';
 import { Keypad, KeypadDevice } from './devices/Keypad';
+import { LegacyDryContact, LegacyDryContactDevice } from './devices/LegacyDryContact';
 import { Light, LightDevice } from './devices/Light';
 import { Motion, MotionDevice } from './devices/Motion';
 import { Panel, PanelDevice } from './devices/Panel';
@@ -176,6 +177,9 @@ export default class XHome {
                 devices.push(new Motion(this.server, rawDevice as MotionDevice));
                 break;
               default:
+                if (['door', 'windows'].includes(rawDevice.properties.type)) {
+                  devices.push(new LegacyDryContact(this.server, rawDevice as LegacyDryContactDevice));
+                }
                 devices.push(new Unknown(this.server, rawDevice));
                 break;
             }
