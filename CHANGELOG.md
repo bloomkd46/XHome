@@ -1,3 +1,12 @@
+### 2.5.0 
+Added support for the following devices:
+ * Smoke Detectors
+ * Legacy Door Sensors
+ * Legacy Window Sensors
+ * Legacy Glass Break Sensors
+ * Legacy Keypads
+
+
 ### 2.4.0 
 * Added armed and alarm Status Codes To Panel
 
