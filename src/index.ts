@@ -188,7 +188,7 @@ export default class XHome {
                 devices.push(new Water(this.server, rawDevice as WaterDevice));
                 break;
               default:
-                if (['door', 'windows'].includes(rawDevice.properties.type)) {
+                if (['door', 'window'].includes(rawDevice.properties.type)) {
                   devices.push(new LegacyDryContact(this.server, rawDevice as LegacyDryContactDevice));
                   break;
                 }
