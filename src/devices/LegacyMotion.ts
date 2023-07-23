@@ -28,7 +28,7 @@ export class LegacyMotion {
     return (await this.server.post('/client/icontrol/update/device', `path=${this.device._links.isBypassed.href}&value=${value}`)).data;
   }
 
-  async mode(value: 'monitor24Hr' | string): Promise<CommandResponse> {
+  async mode(value: 'interiorFollower' | string): Promise<CommandResponse> {
     return (await this.server.post('/client/icontrol/update/device', `path=${this.device._links.functionType.href}&value=${value}`)).data;
   }
 
