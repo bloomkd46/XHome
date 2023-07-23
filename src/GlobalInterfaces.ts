@@ -3,6 +3,7 @@ import { DryContact, DryContactDevice } from './devices/DryContact';
 import { Keyfob, KeyfobDevice } from './devices/Keyfob';
 import { Keypad, KeypadDevice } from './devices/Keypad';
 import { LegacyDryContact, LegacyDryContactDevice } from './devices/LegacyDryContact';
+import { LegacyMotion, LegacyMotionDevice } from './devices/LegacyMotion';
 import { Light, LightDevice } from './devices/Light';
 import { Motion, MotionDevice } from './devices/Motion';
 import { Panel, PanelDevice } from './devices/Panel';
@@ -12,8 +13,8 @@ import { Unknown, UnknownDevice } from './devices/Unknown';
 import { Water, WaterDevice } from './devices/Water';
 
 
-export type Device = Light | Panel | Smoke | Water | Motion | DryContact | LegacyDryContact | Keypad | Keyfob | Router | Camera | Unknown;
-export type RawDevice = LightDevice | PanelDevice | SmokeDevice | WaterDevice | MotionDevice | DryContactDevice | LegacyDryContactDevice |
+export type Device = Light | Panel | Smoke | Water | Motion | LegacyMotion | DryContact | LegacyDryContact | Keypad | Keyfob | Router | Camera | Unknown;
+export type RawDevice = LightDevice | PanelDevice | SmokeDevice | WaterDevice | MotionDevice | LegacyMotionDevice | DryContactDevice | LegacyDryContactDevice |
   KeypadDevice | KeyfobDevice | RouterDevice | CameraDevice | UnknownDevice;
 /*export type DeltaEvent = LightDeltaEvent | SmokeDeltaEvent | WaterDeltaEvent | MotionDeltaEvent | PanelDeltaEvent | DryContactDeltaEvent |
   LegacyDryContactDeltaEvent | CameraDeltaEvent;*/

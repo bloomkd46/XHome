@@ -5,6 +5,7 @@ import { DryContact, DryContactDevice } from './devices/DryContact';
 import { Keyfob, KeyfobDevice } from './devices/Keyfob';
 import { Keypad, KeypadDevice } from './devices/Keypad';
 import { LegacyDryContact, LegacyDryContactDevice } from './devices/LegacyDryContact';
+import { LegacyMotion, LegacyMotionDevice } from './devices/LegacyMotion';
 import { Light, LightDevice } from './devices/Light';
 import { Motion, MotionDevice } from './devices/Motion';
 import { Panel, PanelDevice } from './devices/Panel';
@@ -24,6 +25,7 @@ export * from './devices/Light';
 export * from './devices/Smoke';
 export * from './devices/Water';
 export * from './devices/Motion';
+export * from './devices/LegacyMotion';
 export * from './devices/Panel';
 export * from './devices/Unknown';
 export * from './GlobalInterfaces';
@@ -187,11 +189,16 @@ export default class XHome {
               case 'water':
                 devices.push(new Water(this.server, rawDevice as WaterDevice));
                 break;
-              default:
+              case 'sensor':
                 if (['door', 'window'].includes(rawDevice.properties.type)) {
                   devices.push(new LegacyDryContact(this.server, rawDevice as LegacyDryContactDevice));
                   break;
+                } else if (rawDevice.properties.type === 'motion') {
+                  devices.push(new LegacyMotion(this.server, rawDevice as LegacyMotionDevice));
+                  break;
                 }
+                continue;
+              default:
                 devices.push(new Unknown(this.server, rawDevice));
                 break;
             }
