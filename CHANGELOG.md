@@ -1,3 +1,7 @@
+### 2.8.0 
+* Added support for legacy motion sensors
+
+
 ### 2.7.2 
 * Added gateways to router class
 
