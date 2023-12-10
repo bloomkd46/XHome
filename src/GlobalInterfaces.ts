@@ -13,9 +13,10 @@ import { Unknown, UnknownDevice } from './devices/Unknown';
 import { Water, WaterDevice } from './devices/Water';
 
 
-export type Device = Light | Panel | Smoke | Water | Motion | LegacyMotion | DryContact | LegacyDryContact | Keypad | Keyfob | Router | Camera | Unknown;
-export type RawDevice = LightDevice | PanelDevice | SmokeDevice | WaterDevice | MotionDevice | LegacyMotionDevice | DryContactDevice | LegacyDryContactDevice |
-  KeypadDevice | KeyfobDevice | RouterDevice | CameraDevice | UnknownDevice;
+export type Device = Light | Panel | Smoke | Water | Motion | LegacyMotion | DryContact | LegacyDryContact | Keypad | Keyfob | Router |
+  Camera | Unknown;
+export type RawDevice = LightDevice | PanelDevice | SmokeDevice | WaterDevice | MotionDevice | LegacyMotionDevice | DryContactDevice |
+  LegacyDryContactDevice | KeypadDevice | KeyfobDevice | RouterDevice | CameraDevice | UnknownDevice;
 /*export type DeltaEvent = LightDeltaEvent | SmokeDeltaEvent | WaterDeltaEvent | MotionDeltaEvent | PanelDeltaEvent | DryContactDeltaEvent |
   LegacyDryContactDeltaEvent | CameraDeltaEvent;*/
 
