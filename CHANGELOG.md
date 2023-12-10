@@ -1,3 +1,7 @@
+### 2.8.1 
+* Fixed linting error
+
+
 ### 2.8.0 
 * Added support for legacy motion sensors
 
