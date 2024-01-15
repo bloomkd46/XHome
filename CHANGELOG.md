@@ -1,3 +1,7 @@
+### 2.8.2 
+* Updated Watchdog to handle socket hang-up errors
+
+
 ### 2.8.1 
 * Fixed linting error
 
