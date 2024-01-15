@@ -278,11 +278,16 @@ export default class XHome {
 
   protected watchForActivity() {
     const watchForActivity = async () => {
-      process.nextTick(() => this.waitForActivity().then(() => watchForActivity()).catch(err => {
-        if (this.watchdog?.errorHandler) {
-          this.watchdog.errorHandler(err);
+      process.nextTick(() => this.waitForActivity().then(() => watchForActivity()).catch((err: AxiosError) => {
+        if (err.code === 'ECONNRESET') {
+          //This just means that the request times out, this is normal if no activity happened
+          watchForActivity();
+        } else {
+          if (this.watchdog?.errorHandler) {
+            this.watchdog.errorHandler(err);
+          }
+          setTimeout(() => watchForActivity(), 5000);
         }
-        setTimeout(() => watchForActivity(), 5000);
       }));
     };
     watchForActivity();
