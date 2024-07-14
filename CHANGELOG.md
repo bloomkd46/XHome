@@ -1,3 +1,7 @@
+### 2.8.3 
+* Fixed a potential login bug
+
+
 ### 2.8.2 
 * Updated Watchdog to handle socket hang-up errors
 
