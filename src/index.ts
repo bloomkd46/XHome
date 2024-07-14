@@ -60,8 +60,11 @@ export default class XHome {
           }));
         } else {
           this.loggingIn = true;
-          await this.login();
-          this.loggingIn = false;
+          try {
+            await this.login();
+          } finally {
+            this.loggingIn = false;
+          }
         }
       }
       if (this.xhAuth === undefined) {
