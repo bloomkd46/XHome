@@ -1,3 +1,8 @@
+### 2.8.4 
+* Added a 8 second timeout (Hap-NodeJS times out after 9 seconds)
+
+
+
 ### 2.8.3 
 * Fixed a potential login bug
 
