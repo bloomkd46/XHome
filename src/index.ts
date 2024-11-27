@@ -253,7 +253,7 @@ export default class XHome {
   }
 
   protected async waitForActivity(): Promise<SensorDeltaEvent> {
-    const events = (await this.server.get('/client/icontrol/delta')).data;
+    const events = (await this.server.get('/client/icontrol/delta', { timeout: 0 })).data;
     for (const event of events) {
       for (const device of this.devices) {
         if (device.device.id === event.deviceId || (device instanceof Panel && event.deviceId === null)) {
