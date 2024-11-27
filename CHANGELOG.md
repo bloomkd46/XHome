@@ -1,3 +1,7 @@
+### 2.8.5 
+* Removed the timeout introduced by the previous version from the watchdog
+
+
 ### 2.8.4 
 * Added a 8 second timeout (Hap-NodeJS times out after 9 seconds)
 
