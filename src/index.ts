@@ -37,6 +37,7 @@ export default class XHome {
     headers: {
       'X-Client-Features': 'auth4all,carousel,carousel-devicedeeplink,no-cookie,deeplinkV1',
     },
+    timeout: 8000, //Hap-NodeJS has a timeout of 9 seconds, so we should be fine with 8 seconds
   });
 
   public accessToken?: string;
