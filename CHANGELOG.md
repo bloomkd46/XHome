@@ -1,3 +1,7 @@
+### 2.8.6 
+* Fixed a potential bug that could cause requests to hang indefinitely
+
+
 ### 2.8.5 
 * Removed the timeout introduced by the previous version from the watchdog
 
