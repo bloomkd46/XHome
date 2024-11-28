@@ -18,16 +18,16 @@ import { Device, LoginResponse, Profile, RawDevice, SensorDeltaEvent, XHomeError
 
 export * from './devices/Camera';
 export * from './devices/DryContact';
-export * from './devices/LegacyDryContact';
 export * from './devices/Keyfob';
 export * from './devices/Keypad';
-export * from './devices/Light';
-export * from './devices/Smoke';
-export * from './devices/Water';
-export * from './devices/Motion';
+export * from './devices/LegacyDryContact';
 export * from './devices/LegacyMotion';
+export * from './devices/Light';
+export * from './devices/Motion';
 export * from './devices/Panel';
+export * from './devices/Smoke';
 export * from './devices/Unknown';
+export * from './devices/Water';
 export * from './GlobalInterfaces';
 
 export default class XHome {
@@ -80,8 +80,11 @@ export default class XHome {
           }));
         } else {
           this.gettingProfile = true;
-          await this.getProfile();
-          this.gettingProfile = false;
+          try {
+            await this.getProfile();
+          } finally {
+            this.gettingProfile = false;
+          }
         }
       }
       if (config.headers === undefined) {
