@@ -1,3 +1,7 @@
+### 2.8.9 
+* (Hopefully 🤞) fixed a bug causing legacy contact and motion sensors not to be recognized
+
+
 ### 2.8.6 
 * Fixed a potential bug that could cause requests to hang indefinitely
 
