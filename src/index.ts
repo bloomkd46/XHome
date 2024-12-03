@@ -196,7 +196,7 @@ export default class XHome {
               case 'water':
                 devices.push(new Water(this.server, rawDevice as WaterDevice));
                 break;
-              case 'sensor':
+              default:
                 if (['door', 'window'].includes(rawDevice.properties.type)) {
                   devices.push(new LegacyDryContact(this.server, rawDevice as LegacyDryContactDevice));
                   break;
@@ -204,8 +204,6 @@ export default class XHome {
                   devices.push(new LegacyMotion(this.server, rawDevice as LegacyMotionDevice));
                   break;
                 }
-                continue;
-              default:
                 devices.push(new Unknown(this.server, rawDevice));
                 break;
             }
