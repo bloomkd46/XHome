@@ -1,3 +1,7 @@
+### 2.8.7 
+* (Hopefully 🤞) fixed a bug causing legacy contact and motion sensors not to be recognized
+
+
 ### 2.8.9 
 * (Hopefully 🤞) fixed a bug causing legacy contact and motion sensors not to be recognized
 
